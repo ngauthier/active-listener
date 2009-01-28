@@ -16,7 +16,7 @@ class ActiveListenerTest < Test::Unit::TestCase
       @al.add_event(
         ActiveListener::Event.new(
           :task => "meh", 
-          :every => 5
+          :period => 5
         )
       )
       assert !@al.events.empty?
@@ -31,7 +31,7 @@ class ActiveListenerTest < Test::Unit::TestCase
         @al.add_event(
           ActiveListener::Event.new(
             :task => "test:touch_file",
-            :every => 1
+            :period => 1
           )
         )
         FileUtils.rm_f(File.join('test','sample.txt'))
@@ -65,6 +65,28 @@ class ActiveListenerTest < Test::Unit::TestCase
         assert @al.events[0].time_to_fire > 0
       end
 
+    end
+  end
+
+  context "A listener" do
+    setup do
+      @config_path = File.join(File.dirname(__FILE__), 'active_listener.yml')
+      @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
+      FileUtils.rm_f @sample_file
+    end
+
+    should "be able to read events from yaml" do
+      @al = ActiveListener.new(:config => @config_path)
+      assert @al.events.size > 0
+      assert !File.exists?(@sample_file)
+      @al.fire_events
+      assert File.exists?(@sample_file)
+    end
+
+    should "fail if given a path to a nonexistant file" do
+      assert_raise RuntimeError do
+        @al = ActiveListener.new(:config => @config_path+'.fake')
+      end
     end
   end
 end
