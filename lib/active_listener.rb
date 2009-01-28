@@ -1,6 +1,18 @@
 require 'fileutils'
 
 class ActiveListener
+  attr_reader :events, :base_path
+
+  def self.base_path
+    begin
+      base_path = File.join(RAILS_ROOT, 'activelistener', RAILS_ENV)
+    rescue
+      base_path = File.join('activelistener')
+    end
+    FileUtils.mkdir_p base_path
+    base_path
+  end
+
   def initialize(opts = {})
     self.events = []
     self.base_path = opts[:base_path] || ActiveListener.base_path
@@ -26,18 +38,6 @@ class ActiveListener
     end
   end
 
-  def self.base_path
-    begin
-      base_path = File.join(RAILS_ROOT, 'activelistener', RAILS_ENV)
-    rescue
-      base_path = File.join('activelistener')
-    end
-    FileUtils.mkdir_p base_path
-    base_path
-  end
-
-  attr_reader :events, :base_path
-
   class Event
     def initialize(opts = {})
       self.task = opts[:task] || opts["task"]
@@ -55,7 +55,9 @@ class ActiveListener
     end
 
     private
+
     attr_accessor :task, :period, :last_fire
+
   end
 
   private
@@ -64,7 +66,9 @@ class ActiveListener
 
   def load_events(config_file)
     return if config_file.nil?
-    raise "Config file not found at #{File.expand_path(config_file)}" unless File.exists?(config_file)
+    unless File.exists?(config_file)
+      raise "Config file not found at #{File.expand_path(config_file)}" 
+    end
     f = File.new(config_file,'r')
     yml = YAML.load(f)
     yml["tasks"].each do |task|
