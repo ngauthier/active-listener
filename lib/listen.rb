@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+require 'active_listener'
+
 running = true
 Signal.trap("TERM") do
   running = false

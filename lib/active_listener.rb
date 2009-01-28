@@ -1,6 +1,9 @@
+require 'fileutils'
+
 class ActiveListener
   def initialize(opts = {})
     self.events = []
+    self.base_path = opts[:base_path] || ActiveListener.base_path
   end
 
   def add_event(evt)
@@ -21,7 +24,18 @@ class ActiveListener
       sleep(0.5)
     end
   end
-  attr_reader :events
+
+  def self.base_path
+    begin
+      base_path = File.join(RAILS_ROOT, 'activelistener', RAILS_ENV)
+    rescue
+      base_path = File.join('activelistener')
+    end
+    FileUtils.mkdir_p base_path
+    base_path
+  end
+
+  attr_reader :events, :base_path
 
   class Event
     def initialize(opts = {})
@@ -45,6 +59,6 @@ class ActiveListener
 
   private
 
-  attr_writer :events
+  attr_writer :events, :base_path
 
 end

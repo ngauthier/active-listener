@@ -1,24 +1,33 @@
 require 'rake'
 require 'rake/testtask'
+require 'lib/active_listener'
 
 namespace :listener do
   desc "Start the listener"
-  task :start do
-    listener = File.expand_path(File.join('lib', 'listen.rb'))
+  task :start => [:paths, :stop] do
     command = [
       "start-stop-daemon --start",
-      "--pidfile listen.pid --make-pidfile",
+      "--make-pidfile --pidfile #{LISTEN_PID}",
       "--background",
-      "--exec #{listener}"
+      "--exec #{LISTEN_BIN}",
+      "--chdir #{LIB_PATH}"
     ].join(" ")
+    puts command
     system(command)
   end
 
   desc "Stop the listener"
-  task :stop do
-    listener = File.expand_path(File.join('lib', 'listen.rb'))
-    system("start-stop-daemon --stop --pidfile listen.pid ")
-    FileUtils.rm_f("listen.pid")
+  task :stop => [:paths] do
+    system("start-stop-daemon --stop --pidfile #{LISTEN_PID}")
+    FileUtils.rm_f(LISTEN_PID)
+  end
+
+  desc "Sets up paths for ActiveListener"
+  task :paths do
+    BASE_PATH  = File.expand_path(ActiveListener.base_path)
+    LISTEN_BIN = File.expand_path(File.join('lib','listen.rb'))
+    LISTEN_PID = File.expand_path(File.join(BASE_PATH, 'activelistener.pid'))
+    LIB_PATH = File.expand_path('lib')
   end
 end
 
