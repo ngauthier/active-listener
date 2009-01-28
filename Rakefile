@@ -10,7 +10,7 @@ namespace :listener do
       "--make-pidfile --pidfile #{LISTEN_PID}",
       "--background",
       "--exec #{LISTEN_BIN}",
-      "--chdir #{LIB_PATH}"
+      "--chdir #{File.expand_path(File.join('.'))}"
     ].join(" ")
     puts command
     system(command)
@@ -18,7 +18,7 @@ namespace :listener do
 
   desc "Stop the listener"
   task :stop => [:paths] do
-    system("start-stop-daemon --stop --pidfile #{LISTEN_PID}")
+    system("start-stop-daemon --stop --oknodo --quiet --pidfile #{LISTEN_PID}")
     FileUtils.rm_f(LISTEN_PID)
   end
 
@@ -27,7 +27,6 @@ namespace :listener do
     BASE_PATH  = File.expand_path(ActiveListener.base_path)
     LISTEN_BIN = File.expand_path(File.join('lib','listen.rb'))
     LISTEN_PID = File.expand_path(File.join(BASE_PATH, 'activelistener.pid'))
-    LIB_PATH = File.expand_path('lib')
   end
 end
 

@@ -7,7 +7,8 @@ Signal.trap("TERM") do
 end
 
 @al = ActiveListener.new
-# Read events from YAML
+
+raise "ActiveListener is very boring without events" unless !@al.events.empty?
 
 while running
   @al.fire_events
