@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'yaml'
 
 class ActiveListener
   attr_reader :events, :base_path
@@ -11,6 +12,29 @@ class ActiveListener
     end
     FileUtils.mkdir_p base_path
     base_path
+  end
+
+  def self.autostart(opts = {})
+    ActiveListener.stop(opts)
+    config_file = opts[:config]
+    pid_file = opts[:pid_file]
+    unless config_file and pid_file
+      raise "Need both :config and :pid_file"
+    end
+    command = [
+      "start-stop-daemon --start",
+      "--make-pidfile --pidfile #{pid_file}",
+      "--background",
+      "--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'listen.rb'))}",
+      "--chdir #{File.expand_path(File.dirname(__FILE__))}",
+      "-- #{File.expand_path(config_file)}"
+    ].join(" ")
+    `#{command}`
+  end
+
+  def self.stop(opts = {})
+    pid_file = opts[:pid_file]
+    `start-stop-daemon --stop --oknodo --quiet --pidfile #{File.expand_path(pid_file)}`
   end
 
   def initialize(opts = {})

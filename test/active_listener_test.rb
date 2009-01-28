@@ -89,4 +89,32 @@ class ActiveListenerTest < Test::Unit::TestCase
       end
     end
   end
+
+  context "An autostarted listener" do
+
+    setup do
+      ActiveListener.autostart(
+        :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
+        :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
+      )
+      @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
+    end
+
+    teardown do
+      ActiveListener.stop(
+        :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
+      )
+      FileUtils.rm_f(@sample_file)
+    end
+
+    should "load events from the config file" do
+      sleep(1)
+      assert File.exists?(@sample_file)
+      FileUtils.rm_f(@sample_file)
+      assert !File.exists?(@sample_file)
+      sleep(1)
+      assert File.exists?(@sample_file)
+    end
+
+  end
 end

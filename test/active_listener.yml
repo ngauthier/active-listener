@@ -1,6 +1,6 @@
 ---
   tasks:
   - task: test:touch_file
-    period: 5
+    period: 1
   - task: test:touch_file
-    period: 17
+    period: 3

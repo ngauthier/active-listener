@@ -6,9 +6,9 @@ Signal.trap("TERM") do
   running = false
 end
 
-@al = ActiveListener.new
+@al = ActiveListener.new :config => ARGV[0]
 
-raise "ActiveListener is very boring without events" unless !@al.events.empty?
+raise "ActiveListener is very boring without events" if @al.events.empty?
 
 while running
   @al.fire_events
