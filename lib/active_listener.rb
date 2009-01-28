@@ -15,7 +15,11 @@ class ActiveListener
 
   def sleep_to_next_event
     self.events.sort{|x,y| x.time_to_fire <=> y.time_to_fire}
-    sleep(self.events[0].time_to_fire+0.01)
+    if self.events.first
+      sleep(self.events.first.time_to_fire+0.01)
+    else
+      sleep(0.5)
+    end
   end
   attr_reader :events
 

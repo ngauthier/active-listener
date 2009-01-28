@@ -22,6 +22,10 @@ class ActiveListenerTest < Test::Unit::TestCase
       assert !@al.events.empty?
     end
 
+    should "sleep when it has no events" do
+      @al.sleep_to_next_event
+    end
+
     context "with a file timer" do
       setup do
         @al.add_event(

@@ -1,9 +1,13 @@
 #!/usr/bin/env ruby
+running = true
 Signal.trap("TERM") do
-  puts "I am done"
-  exit(0)
+  running = false
 end
-puts "let us listen"
-while true
-  sleep(5)
+
+@al = ActiveListener.new
+# Read events from YAML
+
+while running
+  @al.fire_events
+  @al.sleep_to_next_event
 end
