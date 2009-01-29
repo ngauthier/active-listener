@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Jan 29 12:27:15 -0500 2009</td>
+      <td>Thu Jan 29 13:00:51 -0500 2009</td>
     </tr>
     </table>
   </div>
@@ -121,8 +121,8 @@ like RAILS_ROOT/config/initializers/active-listener.rb that has this in it:
     require 'active-listener'
     ActiveListener.autostart(
       :config =&gt; File.join(RAILS_ROOT, 'config', 'active-listener.yml'),
-      :log_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener.log'),
-      :pid_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener.pid'),
+      :log_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.log'),
+      :pid_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.pid'),
       :rake_root =&gt; File.join(RAILS_ROOT)
     )
 </pre>
@@ -143,7 +143,14 @@ file is the same and there is one running.
 So, you don&#8216;t need to run the executable, it will
 &quot;autostart&quot; thanks to the initializer. Keep in mind this means
 that it will be running during your tests, development server, production,
-etc. I am working on &quot;environmentalizing&quot; the gem.
+and any other environments you have. If you run your tests, the daemon
+keeps going after the tests are done. It doesn&#8216;t stop when the server
+stops.
+</p>
+<p>
+If you run your tests and you run the app in dev mode, there will be two
+instances running simultaneously and they&#8216;ll both be running the
+tasks (but in the appropriate environment).
 </p>
 <p>
 If you want to stop active-listener, run:
