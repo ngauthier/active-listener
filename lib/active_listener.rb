@@ -16,7 +16,7 @@ class ActiveListener
       "start-stop-daemon --start",
       "--make-pidfile --pidfile #{pid_file}",
       "--background",
-      "--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'listen.rb'))}",
+      "--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'listen'))}",
       "--chdir #{File.expand_path(File.dirname(__FILE__))}",
       "--",
       "#{File.expand_path(config_file)}",
