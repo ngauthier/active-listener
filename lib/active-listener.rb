@@ -79,8 +79,11 @@ class ActiveListener
     def fire(opts = {})
       self.last_fire = Time.now.to_f
       Dir.chdir(opts[:rake_root]) if opts[:rake_root]
-      `rake #{task}`
-      opts[:rake_root]
+      begin
+        `RAILS_ENV=#{RAILS_ENV} rake #{task}`
+      rescue
+        `rake #{task}`
+      end
     end
 
     private

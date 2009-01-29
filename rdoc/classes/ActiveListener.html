@@ -55,8 +55,8 @@
         <tr class="top-aligned-row">
             <td><strong>In:</strong></td>
             <td>
-                <a href="../files/lib/active_listener_rb.html">
-                lib/active_listener.rb
+                <a href="../files/lib/active-listener_rb.html">
+                lib/active-listener.rb
                 </a>
         <br />
             </td>
@@ -161,7 +161,7 @@
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 7</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 7</span>
  7:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">autostart</span>(<span class="ruby-identifier">opts</span> = {})
  8:     <span class="ruby-keyword kw">begin</span>
  9:       <span class="ruby-identifier">config_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
@@ -204,7 +204,7 @@
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 36</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 36</span>
 36:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
 37:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span> = []
 38:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">log_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>]
@@ -232,7 +232,7 @@
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 31</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 31</span>
 31:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span> = {})
 32:     <span class="ruby-identifier">pid_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>]
 33:     <span class="ruby-node">`start-stop-daemon --stop --oknodo --quiet --pidfile #{File.expand_path(pid_file)}`</span>
@@ -258,7 +258,7 @@
             onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 45</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 45</span>
 45:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_event</span>(<span class="ruby-identifier">evt</span>)
 46:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">evt</span>)
 47:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Added Event #{evt.inspect}&quot;</span>)
@@ -282,7 +282,7 @@
             onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 50</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 50</span>
 50:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire_events</span>
 51:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>}.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">evt</span><span class="ruby-operator">|</span>
 52:       <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Firing event: #{evt.inspect}&quot;</span>)
@@ -308,7 +308,7 @@
             onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000006-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 57</span>
+    <span class="ruby-comment cmt"># File lib/active-listener.rb, line 57</span>
 57:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sleep_to_next_event</span>
 58:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">sort</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span>,<span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">time_to_fire</span>}
 59:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>

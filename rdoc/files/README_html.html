@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Jan 29 10:40:27 -0500 2009</td>
+      <td>Thu Jan 29 12:27:19 -0500 2009</td>
     </tr>
     </table>
   </div>
@@ -82,15 +82,6 @@ time intervals. In the future, we plan to allow event listening and
 firing.&lt;/p&gt;
 </p>
 <p>
-&lt;h2&gt;Configuration&lt;/h2&gt;
-</p>
-<p>
-&lt;h3&gt;Add a config file&lt;/h3&gt;
-</p>
-<p>
-&lt;h3&gt;Include in your boot&lt;/h3&gt;
-</p>
-<p>
 &lt;h2&gt;Installation&lt;/h2&gt;
 </p>
 <p>
@@ -105,6 +96,86 @@ firing.&lt;/p&gt;
 <p>
 &lt;pre&gt;<tt>git clone git@github.com:ngauthier/active-listener.git
 active-listener cd active-listener rake gem install </tt>&lt;/pre&gt;
+</p>
+<p>
+&lt;h2&gt;Configuration&lt;/h2&gt;
+</p>
+<p>
+&lt;h3&gt;Add a config file&lt;/h3&gt;
+</p>
+<p>
+&lt;p&gt;In your rails project, add a config file like this:&lt;/p&gt;
+</p>
+<p>
+&lt;pre&gt;&lt;code&gt;&#8212;
+</p>
+<pre>
+  tasks:
+    - task: my:rake:task
+      period: 5
+</pre>
+<p>
+&lt;/code&gt;&lt;/pre&gt;
+</p>
+<p>
+&lt;p&gt;This instructs active-listener to run &quot;rake
+my:rake:task&quot; every 5 seconds.&lt;/p&gt;
+</p>
+<p>
+&lt;p&gt;Usually, these config files go in
+RAILS_ROOT/config/active-listener.yml.&lt;/p&gt;
+</p>
+<p>
+&lt;h3&gt;Include an initializer&lt;/h3&gt;
+</p>
+<p>
+&lt;p&gt;Create a file in the initializers directory, like
+RAILS_ROOT/config/initializers/active-listener.rb that has this in
+it:&lt;/p&gt;
+</p>
+<p>
+&lt;pre&gt;&lt;code&gt;require &#8216;active-listener&#8217; <a
+href="../classes/ActiveListener.html#M000001">ActiveListener.autostart</a>(
+</p>
+<pre>
+  :config =&amp;gt; File.join(RAILS_ROOT, 'config', 'active-listener.yml'),
+  :log_file =&amp;gt; File.join(RAILS_ROOT, 'log', 'active-listener.log'),
+  :pid_file =&amp;gt; File.join(RAILS_ROOT, 'log', 'active-listener.pid'),
+  :rake_root =&amp;gt; File.join(RAILS_ROOT)
+</pre>
+<p>
+) &lt;/code&gt;&lt;/pre&gt;
+</p>
+<p>
+&lt;p&gt;This will use the config file
+&quot;config/active-listener.yml&quot;. It will put the log file in
+&quot;log/active-listener.log&quot; and the pid file for tracking the
+process in &quot;log/active-listener.pid&quot;.&lt;/p&gt;
+</p>
+<p>
+&lt;h2&gt;Usage&lt;/h2&gt;
+</p>
+<p>
+&lt;p&gt;Active Listener will automatically start whenever the rails
+environment is loaded. It will replace an existing instance of
+active-listener if the pid file is the same and there is one
+running.&lt;/p&gt;
+</p>
+<p>
+&lt;p&gt;So, you don&#8216;t need to run the executable, it will
+&quot;autostart&quot; thanks to the initializer. Keep in mind this means
+that it will be running during your tests, development server, production,
+etc. I am working on &quot;environmentalizing&quot; the gem.&lt;/p&gt;
+</p>
+<p>
+&lt;p&gt;If you want to stop active-listener, run:&lt;/p&gt;
+</p>
+<p>
+&lt;pre&gt;<tt>active-listener &#8212;stop log/active-listener.pid
+</tt>&lt;/pre&gt;
+</p>
+<p>
+&lt;p&gt;Make sure to point it to your pid file.&lt;/p&gt;
 </p>
 <p>
 &lt;h2&gt;Other notes&lt;/h2&gt;

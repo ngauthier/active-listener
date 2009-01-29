@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Jan 29 10:40:01 -0500 2009</td>
+      <td>Thu Jan 29 12:27:15 -0500 2009</td>
     </tr>
     </table>
   </div>
@@ -78,15 +78,6 @@ specific time intervals. In the future, we plan to allow event listening
 and firing.
 </p>
 <p>
-## Configuration
-</p>
-<p>
-### Add a config file
-</p>
-<p>
-### Include in your boot
-</p>
-<p>
 ## Installation
 </p>
 <p>
@@ -103,6 +94,66 @@ and firing.
     cd active-listener
     rake gem install
 </pre>
+<p>
+## Configuration
+</p>
+<p>
+### Add a config file In your rails project, add a config file like this:
+</p>
+<pre>
+    ---
+      tasks:
+        - task: my:rake:task
+          period: 5
+</pre>
+<p>
+This instructs active-listener to run &quot;rake my:rake:task&quot; every 5
+seconds.
+</p>
+<p>
+Usually, these config files go in RAILS_ROOT/config/active-listener.yml.
+</p>
+<p>
+### Include an initializer Create a file in the initializers directory,
+like RAILS_ROOT/config/initializers/active-listener.rb that has this in it:
+</p>
+<pre>
+    require 'active-listener'
+    ActiveListener.autostart(
+      :config =&gt; File.join(RAILS_ROOT, 'config', 'active-listener.yml'),
+      :log_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener.log'),
+      :pid_file =&gt; File.join(RAILS_ROOT, 'log', 'active-listener.pid'),
+      :rake_root =&gt; File.join(RAILS_ROOT)
+    )
+</pre>
+<p>
+This will use the config file &quot;config/active-listener.yml&quot;. It
+will put the log file in &quot;log/active-listener.log&quot; and the pid
+file for tracking the process in &quot;log/active-listener.pid&quot;.
+</p>
+<p>
+## Usage
+</p>
+<p>
+Active Listener will automatically start whenever the rails environment is
+loaded. It will replace an existing instance of active-listener if the pid
+file is the same and there is one running.
+</p>
+<p>
+So, you don&#8216;t need to run the executable, it will
+&quot;autostart&quot; thanks to the initializer. Keep in mind this means
+that it will be running during your tests, development server, production,
+etc. I am working on &quot;environmentalizing&quot; the gem.
+</p>
+<p>
+If you want to stop active-listener, run:
+</p>
+<pre>
+    active-listener --stop log/active-listener.pid
+</pre>
+<p>
+Make sure to point it to your pid file.
+</p>
 <p>
 ## Other notes This gem uses Jeweler.
 </p>
