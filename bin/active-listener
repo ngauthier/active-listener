@@ -1,14 +1,21 @@
 #!/usr/bin/env ruby
-require 'active_listener'
+require 'active-listener'
 
 running = true
 Signal.trap("TERM") do
   running = false
 end
 
-if ARGV[0].nil? or ARGV[1].nil? or ARGV[2].nil?
-  puts "USAGE: listen <config_file> <log_file> <rake_root>"
+if ARGV[0].nil? or ARGV[1].nil? or (ARGV[0] != '--stop' and ARGV[2].nil?)
+  puts "USAGE:"
+  puts "\tactive-listener <config_file> <log_file> <rake_root>"
+  puts "\tactive-listener --stop <pid_file>"
   exit(1)
+end
+
+if ARGV[0] == "--stop"
+  ActiveListener.stop(:pid_file => ARGV[1])
+  exit(0)
 end
 
 @al = ActiveListener.new :config => ARGV[0], :log_file => ARGV[1], :rake_root => ARGV[2]

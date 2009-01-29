@@ -132,6 +132,11 @@
           <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
           <td class="context-item-desc"></td>
         </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">rake_root</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
         </table>
       </div>
     </div>
@@ -158,25 +163,28 @@
 <pre>
     <span class="ruby-comment cmt"># File lib/active_listener.rb, line 7</span>
  7:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">autostart</span>(<span class="ruby-identifier">opts</span> = {})
- 8:     <span class="ruby-constant">ActiveListener</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span>)
- 9:     <span class="ruby-identifier">config_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>]
-10:     <span class="ruby-identifier">pid_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>]
-11:     <span class="ruby-identifier">log_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>]
-12:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">config_file</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">pid_file</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">log_file</span>
-13:       <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Need :config :pid_file :log_file&quot;</span>
-14:     <span class="ruby-keyword kw">end</span>
-15:     <span class="ruby-identifier">command</span> = [
-16:       <span class="ruby-value str">&quot;start-stop-daemon --start&quot;</span>,
-17:       <span class="ruby-node">&quot;--make-pidfile --pidfile #{pid_file}&quot;</span>,
-18:       <span class="ruby-value str">&quot;--background&quot;</span>,
-19:       <span class="ruby-node">&quot;--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'listen'))}&quot;</span>,
-20:       <span class="ruby-node">&quot;--chdir #{File.expand_path(File.dirname(__FILE__))}&quot;</span>,
-21:       <span class="ruby-value str">&quot;--&quot;</span>,
-22:       <span class="ruby-node">&quot;#{File.expand_path(config_file)}&quot;</span>,
-23:       <span class="ruby-node">&quot;#{File.expand_path(log_file)}&quot;</span>
-24:     ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; &quot;</span>)
-25:     <span class="ruby-node">`#{command}`</span>
-26:   <span class="ruby-keyword kw">end</span>
+ 8:     <span class="ruby-keyword kw">begin</span>
+ 9:       <span class="ruby-identifier">config_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
+10:       <span class="ruby-identifier">pid_file</span>    = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>])
+11:       <span class="ruby-identifier">log_file</span>    = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>])
+12:       <span class="ruby-identifier">rake_root</span>   = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>])
+13:     <span class="ruby-keyword kw">rescue</span>
+14:       <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Need :config :pid_file :log_file :rake_root&quot;</span>
+15:     <span class="ruby-keyword kw">end</span>
+16:     <span class="ruby-constant">ActiveListener</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span>)
+17:     <span class="ruby-identifier">command</span> = [
+18:       <span class="ruby-value str">&quot;start-stop-daemon --start&quot;</span>,
+19:       <span class="ruby-node">&quot;--make-pidfile --pidfile #{pid_file}&quot;</span>,
+20:       <span class="ruby-value str">&quot;--background&quot;</span>,
+21:       <span class="ruby-node">&quot;--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'active-listener'))}&quot;</span>,
+22:       <span class="ruby-node">&quot;--chdir #{File.expand_path(File.dirname(__FILE__))}&quot;</span>,
+23:       <span class="ruby-value str">&quot;--&quot;</span>,
+24:       <span class="ruby-node">&quot;#{config_file}&quot;</span>,
+25:       <span class="ruby-node">&quot;#{log_file}&quot;</span>,
+26:       <span class="ruby-node">&quot;#{rake_root}&quot;</span>
+27:     ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; &quot;</span>)
+28:     <span class="ruby-node">`#{command}`</span>
+29:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -196,14 +204,15 @@
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 33</span>
-33:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
-34:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span> = []
-35:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">log_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log</span>]
-36:     <span class="ruby-identifier">clear_log</span>
-37:     <span class="ruby-identifier">log</span>(<span class="ruby-value str">&quot;ActiveListener Initialized&quot;</span>)
-38:     <span class="ruby-identifier">load_events</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
-39:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 36</span>
+36:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
+37:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span> = []
+38:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">log_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>]
+39:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">rake_root</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>]
+40:     <span class="ruby-identifier">clear_log</span>
+41:     <span class="ruby-identifier">log</span>(<span class="ruby-value str">&quot;ActiveListener Initialized&quot;</span>)
+42:     <span class="ruby-identifier">load_events</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
+43:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -223,11 +232,11 @@
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 28</span>
-28:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span> = {})
-29:     <span class="ruby-identifier">pid_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>]
-30:     <span class="ruby-node">`start-stop-daemon --stop --oknodo --quiet --pidfile #{File.expand_path(pid_file)}`</span>
-31:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 31</span>
+31:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span> = {})
+32:     <span class="ruby-identifier">pid_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>]
+33:     <span class="ruby-node">`start-stop-daemon --stop --oknodo --quiet --pidfile #{File.expand_path(pid_file)}`</span>
+34:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -249,11 +258,11 @@
             onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 41</span>
-41:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_event</span>(<span class="ruby-identifier">evt</span>)
-42:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">evt</span>)
-43:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Added Event #{evt.inspect}&quot;</span>)
-44:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 45</span>
+45:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_event</span>(<span class="ruby-identifier">evt</span>)
+46:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">evt</span>)
+47:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Added Event #{evt.inspect}&quot;</span>)
+48:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -273,13 +282,13 @@
             onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 46</span>
-46:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire_events</span>
-47:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>}.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">evt</span><span class="ruby-operator">|</span>
-48:       <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Firing event: #{evt.inspect}&quot;</span>)
-49:       <span class="ruby-identifier">evt</span>.<span class="ruby-identifier">fire</span>
-50:     <span class="ruby-keyword kw">end</span>
-51:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 50</span>
+50:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire_events</span>
+51:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>}.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">evt</span><span class="ruby-operator">|</span>
+52:       <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Firing event: #{evt.inspect}&quot;</span>)
+53:       <span class="ruby-identifier">log</span>(<span class="ruby-identifier">evt</span>.<span class="ruby-identifier">fire</span>(<span class="ruby-identifier">:rake_root</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">rake_root</span>))
+54:     <span class="ruby-keyword kw">end</span>
+55:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -299,17 +308,17 @@
             onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000006-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 53</span>
-53:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sleep_to_next_event</span>
-54:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">sort</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span>,<span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">time_to_fire</span>}
-55:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>
-56:       <span class="ruby-identifier">sleep_time</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">time_to_fire</span><span class="ruby-operator">+</span><span class="ruby-value">0</span><span class="ruby-value">.01</span>
-57:     <span class="ruby-keyword kw">else</span>
-58:       <span class="ruby-identifier">sleep_time</span> = <span class="ruby-value">0</span><span class="ruby-value">.5</span>
-59:     <span class="ruby-keyword kw">end</span>
-60:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Sleeping for #{sleep_time}&quot;</span>)
-61:     <span class="ruby-identifier">sleep</span>(<span class="ruby-identifier">sleep_time</span>)
-62:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 57</span>
+57:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sleep_to_next_event</span>
+58:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">sort</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span>,<span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">time_to_fire</span>}
+59:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>
+60:       <span class="ruby-identifier">sleep_time</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">time_to_fire</span><span class="ruby-operator">+</span><span class="ruby-value">0</span><span class="ruby-value">.01</span>
+61:     <span class="ruby-keyword kw">else</span>
+62:       <span class="ruby-identifier">sleep_time</span> = <span class="ruby-value">0</span><span class="ruby-value">.5</span>
+63:     <span class="ruby-keyword kw">end</span>
+64:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Sleeping for #{sleep_time}&quot;</span>)
+65:     <span class="ruby-identifier">sleep</span>(<span class="ruby-identifier">sleep_time</span>)
+66:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

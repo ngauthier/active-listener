@@ -2,7 +2,7 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rcov/rcovtask'
-require 'lib/active_listener'
+require 'lib/active-listener'
 
 begin
   require 'jeweler'
@@ -13,6 +13,8 @@ begin
     s.homepage = "http://github.com/ngauthier/active-listener"
     s.description = "TODO"
     s.authors = ["Nick Gauthier"]
+    s.executables = ['active-listener']
+    s.files = FileList["[A-Z]*.*", "{bin,generators,lib,test,spec}/**/*"]
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

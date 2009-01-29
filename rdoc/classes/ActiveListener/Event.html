@@ -147,12 +147,12 @@
             onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000007-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 65</span>
-65:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
-66:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">task</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:task</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">opts</span>[<span class="ruby-value str">&quot;task&quot;</span>]
-67:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">period</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:period</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">opts</span>[<span class="ruby-value str">&quot;period&quot;</span>]
-68:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">last_fire</span> = <span class="ruby-value">0</span>
-69:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 69</span>
+69:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
+70:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">task</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:task</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">opts</span>[<span class="ruby-value str">&quot;task&quot;</span>]
+71:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">period</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:period</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">opts</span>[<span class="ruby-value str">&quot;period&quot;</span>]
+72:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">last_fire</span> = <span class="ruby-value">0</span>
+73:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -165,7 +165,7 @@
 
         <div class="method-heading">
           <a href="#M000009" class="method-signature">
-          <span class="method-name">fire</span><span class="method-args">()</span>
+          <span class="method-name">fire</span><span class="method-args">(opts = {})</span>
           </a>
         </div>
       
@@ -174,11 +174,13 @@
             onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000009-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 75</span>
-75:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire</span>
-76:       <span class="ruby-node">`rake #{task}`</span>
-77:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">last_fire</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>
-78:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 79</span>
+79:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire</span>(<span class="ruby-identifier">opts</span> = {})
+80:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">last_fire</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>
+81:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>]) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>]
+82:       <span class="ruby-node">`rake #{task}`</span>
+83:       <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>]
+84:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -198,10 +200,10 @@
             onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000008-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 71</span>
-71:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">time_to_fire</span>
-72:       <span class="ruby-identifier">last_fire</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">period</span> <span class="ruby-operator">-</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>
-73:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/active_listener.rb, line 75</span>
+75:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">time_to_fire</span>
+76:       <span class="ruby-identifier">last_fire</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">period</span> <span class="ruby-operator">-</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>
+77:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

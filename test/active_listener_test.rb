@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper'
-require 'active_listener'
+require 'active-listener'
 
 class ActiveListenerTest < Test::Unit::TestCase
   context "A new listener" do
