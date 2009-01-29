@@ -5,13 +5,15 @@ class ActiveListener
   attr_reader :events
 
   def self.autostart(opts = {})
-    ActiveListener.stop(opts)
-    config_file = opts[:config]
-    pid_file = opts[:pid_file]
-    log_file = opts[:log_file]
-    unless config_file and pid_file and log_file
-      raise "Need :config :pid_file :log_file"
+    begin
+      config_file = File.expand_path(opts[:config])
+      pid_file    = File.expand_path(opts[:pid_file])
+      log_file    = File.expand_path(opts[:log_file])
+      rake_root   = File.expand_path(opts[:rake_root])
+    rescue
+      raise "Need :config :pid_file :log_file :rake_root"
     end
+    ActiveListener.stop(opts)
     command = [
       "start-stop-daemon --start",
       "--make-pidfile --pidfile #{pid_file}",
@@ -19,8 +21,9 @@ class ActiveListener
       "--exec #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'listen'))}",
       "--chdir #{File.expand_path(File.dirname(__FILE__))}",
       "--",
-      "#{File.expand_path(config_file)}",
-      "#{File.expand_path(log_file)}"
+      "#{config_file}",
+      "#{log_file}",
+      "#{rake_root}"
     ].join(" ")
     `#{command}`
   end
@@ -32,7 +35,8 @@ class ActiveListener
 
   def initialize(opts = {})
     self.events = []
-    self.log_file = opts[:log]
+    self.log_file = opts[:log_file]
+    self.rake_root = opts[:rake_root]
     clear_log
     log("ActiveListener Initialized")
     load_events(opts[:config])
@@ -46,7 +50,7 @@ class ActiveListener
   def fire_events
     self.events.select{|e| e.time_to_fire < 0}.each do |evt|
       log("Firing event: #{evt.inspect}")
-      evt.fire
+      log(evt.fire(:rake_root => rake_root))
     end
   end
 
@@ -72,9 +76,11 @@ class ActiveListener
       last_fire + period - Time.now.to_f
     end
 
-    def fire
-      `rake #{task}`
+    def fire(opts = {})
       self.last_fire = Time.now.to_f
+      Dir.chdir(opts[:rake_root]) if opts[:rake_root]
+      `rake #{task}`
+      opts[:rake_root]
     end
 
     private
@@ -86,12 +92,12 @@ class ActiveListener
   private
 
   attr_writer :events
-  attr_accessor :log_file
+  attr_accessor :log_file, :rake_root
 
   def load_events(config_file)
     return if config_file.nil?
     unless File.exists?(config_file)
-      log("Config file not found at #{File.expand_path(config_file)}")
+      log("Config file not found at #{config_file}")
       return
     end
     log("Loading tasks from #{config_file}")

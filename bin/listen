@@ -6,12 +6,12 @@ Signal.trap("TERM") do
   running = false
 end
 
-if ARGV[0].nil? or ARGV[1].nil?
-  puts "USAGE: listen <config_file> <log_file>"
+if ARGV[0].nil? or ARGV[1].nil? or ARGV[2].nil?
+  puts "USAGE: listen <config_file> <log_file> <rake_root>"
   exit(1)
 end
 
-@al = ActiveListener.new :config => ARGV[0], :log => ARGV[1]
+@al = ActiveListener.new :config => ARGV[0], :log_file => ARGV[1], :rake_root => ARGV[2]
 
 if @al.events.empty?
   log = File.new(ARGV[1], 'a')

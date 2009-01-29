@@ -1,9 +1,0 @@
-Active Listener
-
-Nick Gauthier (nick@smartlogicsolutions.com)
-
-It will listen for events (including time-based events) and then carry out the corresponding rake task when that fires.
-
-It's good at bringing lots of daemons together.
-
-And it's not done yet. Send diet coke.

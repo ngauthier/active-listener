@@ -92,7 +92,8 @@ class ActiveListenerTest < Test::Unit::TestCase
       ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
-        :log_file => File.join(File.dirname(__FILE__), 'active_listener.log')
+        :log_file => File.join(File.dirname(__FILE__), 'active_listener.log'),
+        :rake_root => File.join(File.dirname(__FILE__), '..')
       )
       @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
     end
