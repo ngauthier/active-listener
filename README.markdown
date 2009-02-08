@@ -47,26 +47,22 @@ This will use the config file "config/active-listener.yml". It will put the log 
 ### Special Handling of ActiveListener rake tasks that depend on the rails environment
 The scheme devised in the previous sections will generate an infinite loop if your Active Listener rake task(s) depend(s) on the rails environment being loaded.  This occurs because we have added the initializer code into config/initializers, which gets loaded every time the environment is loaded.  In order to avoid this, we can set a global variable that is queried in the initializer, providing conditional load behavior.  Now, our initializer looks like this:
 
-    if !$active_listener_activated
+    if RAILS_ENV == "production" && !$active_listener_activated
+      $active_listener_activated = true
       require 'active-listener'
       ActiveListener.autostart(
         :config => File.join(RAILS_ROOT, 'config', 'active-listener.yml'),
-        :log_file => File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.log'),
-        :pid_file => File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.pid'),
+        :log_file => File.join(RAILS_ROOT, 'log', "active-listener-#{RAILS_ENV}.log"),
+        :pid_file => File.join(RAILS_ROOT, 'log', "active-listener-#{RAILS_ENV}.pid"),
         :rake_root => File.join(RAILS_ROOT)
       )
-    end
+    end    
     
 And our Active Listener rake task (found in lib/tasks/active-listener.rake) looks like:
 
-    desc "Helper to preclude infinite loop when a listener task depends on the rails environment"
-    task :set_active_listener_active do
-      $active_listener_activated = true
-    end
-
     namespace :listeners do
       desc "Close games that have ended"
-      task :game_end => [:set_active_listener_active, :environment] do
+      task :game_end => :environment do
         # Logic as dictated by your app's needs
       end
     end
