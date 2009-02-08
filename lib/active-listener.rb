@@ -119,7 +119,7 @@ class ActiveListener
   def log(text)
     return unless log_file
     f = File.new(log_file, 'a')
-    f.write text
+    f.write "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S')}]: #{text}"
     f.write "\n"
     f.close
   end
