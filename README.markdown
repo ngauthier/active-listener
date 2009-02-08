@@ -45,7 +45,7 @@ Create a file in the initializers directory, like RAILS_ROOT/config/initializers
 This will use the config file "config/active-listener.yml". It will put the log file in "log/active-listener.log" and the pid file for tracking the process in "log/active-listener.pid".
 
 ### Special Handling of ActiveListener rake tasks that depend on the rails environment
-The scheme devised in the previous sections will generate infinite an infinite loop if your Active Listener rake tasks depend on the rails environment being loaded.  This occurs because we have added the initializer code into config/initializers.  In order to avoid this, we can set a global variable that is queried in the initializer, providing conditional load behavior.  Now, our initializer looks like this:
+The scheme devised in the previous sections will generate an infinite loop if your Active Listener rake task(s) depend(s) on the rails environment being loaded.  This occurs because we have added the initializer code into config/initializers, which gets loaded every time the environment is loaded.  In order to avoid this, we can set a global variable that is queried in the initializer, providing conditional load behavior.  Now, our initializer looks like this:
 
     if !$active_listener_activated
       require 'active-listener'
