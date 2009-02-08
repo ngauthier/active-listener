@@ -44,6 +44,33 @@ Create a file in the initializers directory, like RAILS_ROOT/config/initializers
 
 This will use the config file "config/active-listener.yml". It will put the log file in "log/active-listener.log" and the pid file for tracking the process in "log/active-listener.pid".
 
+### Special Handling of ActiveListener rake tasks that depend on the rails environment
+The scheme devised in the previous sections will generate infinite an infinite loop if your Active Listener rake tasks depend on the rails environment being loaded.  This occurs because we have added the initializer code into config/initializers.  In order to avoid this, we can set a global variable that is queried in the initializer, providing conditional load behavior.  Now, our initializer looks like this:
+
+    if !$active_listener_activated
+      require 'active-listener'
+      ActiveListener.autostart(
+        :config => File.join(RAILS_ROOT, 'config', 'active-listener.yml'),
+        :log_file => File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.log'),
+        :pid_file => File.join(RAILS_ROOT, 'log', 'active-listener-'+RAILS_ENV+'.pid'),
+        :rake_root => File.join(RAILS_ROOT)
+      )
+    end
+    
+And our Active Listener rake task (found in lib/tasks/active-listener.rake) looks like:
+
+    desc "Helper to preclude infinite loop when a listener task depends on the rails environment"
+    task :set_active_listener_active do
+      $active_listener_activated = true
+    end
+
+    namespace :listeners do
+      desc "Close games that have ended"
+      task :game_end => [:set_active_listener_active, :environment] do
+        # Logic as dictated by your app's needs
+      end
+    end
+
 ## Usage
 
 Active Listener will automatically start whenever the rails environment is loaded. It will replace an existing instance of active-listener if the pid file is the same and there is one running.
