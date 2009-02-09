@@ -23,7 +23,7 @@ class ActiveListenerTest < Test::Unit::TestCase
     end
 
     should "sleep when it has no events" do
-      @al.sleep_to_next_event
+      sleep(@al.time_to_next_event)
     end
 
     context "with a file timer" do
@@ -44,7 +44,7 @@ class ActiveListenerTest < Test::Unit::TestCase
 
       should "touch a file" do
         assert !File.exists?(@sample_file)
-        @al.sleep_to_next_event
+        sleep(@al.time_to_next_event)
         @al.fire_events
         assert File.exists?(@sample_file)
       end
@@ -59,7 +59,7 @@ class ActiveListenerTest < Test::Unit::TestCase
         FileUtils.rm_f(@sample_file)
         @al.fire_events
         assert !File.exists?(@sample_file)
-        @al.sleep_to_next_event
+        sleep(@al.time_to_next_event)
         assert @al.events[0].time_to_fire < 0
         assert !File.exists?(@sample_file)
         @al.fire_events
@@ -81,7 +81,7 @@ class ActiveListenerTest < Test::Unit::TestCase
       @al = ActiveListener.new(:config => @config_path)
       assert @al.events.size > 0
       assert !File.exists?(@sample_file)
-      @al.sleep_to_next_event
+      sleep(@al.time_to_next_event)
       @al.fire_events
       assert File.exists?(@sample_file)
     end
@@ -157,6 +157,36 @@ class ActiveListenerTest < Test::Unit::TestCase
       assert_not_equal pid, new_pid
       assert(pid_running(new_pid))
       assert(!pid_running(pid))
+    end
+  end
+
+  context "An event-based listener" do
+
+    setup do
+      @al = ActiveListener.new({})
+      @al.add_event(ActiveListener::Event.new(
+        :task => 'test:touch_file',
+        :trigger => "MY_TRIGGER"
+      ))
+      @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
+      FileUtils.rm_f @sample_file
+    end
+
+    teardown do
+      FileUtils.rm_f @sample_file
+    end
+
+    should "not fire any events at the beginning" do
+      assert !File.exists?(@sample_file)
+      assert @al.time_to_next_event.infinite?
+      @al.fire_events
+      assert !File.exists?(@sample_file)
+    end
+
+    should "be able to be triggered" do
+      assert !File.exists?(@sample_file)
+      @al.trigger "MY_TRIGGER"
+      assert File.exists?(@sample_file)
     end
   end
 

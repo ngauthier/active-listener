@@ -54,6 +54,13 @@ class ActiveListener
     self.events.sort{|x,y| x.time_to_fire <=> y.time_to_fire}
   end
 
+  def trigger(trigger)
+    self.events.select{|e| e.trigger == trigger}.each do |evt|
+      log("Event triggered: #{evt.inspect}")
+      log(evt.fire(:rake_root => rake_root))
+    end
+  end
+
   def time_to_next_event
     if self.events.first
       sleep_time = self.events.first.time_to_fire+0.01
@@ -63,20 +70,21 @@ class ActiveListener
     return sleep_time
   end
 
-  def sleep_to_next_event
-    log("Sleeping for #{time_to_next_event}")
-    sleep(time_to_next_event)
-  end
-
   class Event
     def initialize(opts = {})
       self.task = opts[:task] || opts["task"]
       self.period = opts[:period] || opts["period"]
+      self.trigger = opts[:trigger] || opts["trigger"]
       self.last_fire = Time.now.to_f
     end
 
     def time_to_fire
-      last_fire + period - Time.now.to_f
+      if period
+        return last_fire + period - Time.now.to_f
+      else
+        # oh does! forever!
+        return 1.0/0.0
+      end
     end
 
     def fire(opts = {})
@@ -89,9 +97,11 @@ class ActiveListener
       end
     end
 
+    attr_reader :trigger, :period, :last_fire, :task
+
     private
 
-    attr_accessor :task, :period, :last_fire
+    attr_writer :task, :period, :trigger, :last_fire
 
   end
 
