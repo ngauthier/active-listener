@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{active-listener}
-  s.version = "0.2.3"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nick Gauthier"]
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = %q{TODO}
   s.email = %q{nick@smartlogicsolutions.com}
   s.executables = ["active-listener"]
-  s.files = ["VERSION.yml", "README.markdown", "bin/active-listener", "lib/activelistener", "lib/active-listener.rb", "test/test_helper.rb", "test/active_listener.log", "test/active_listener.pid", "test/active_listener.yml", "test/active_listener_test.rb"]
+  s.files = ["VERSION.yml", "README.html", "README.markdown", "bin/active-listener", "lib/activelistener", "lib/active-listener.rb", "test/test_helper.rb", "test/active_listener.log", "test/active_listener.pid", "test/active_listener.yml", "test/active_listener_test.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/ngauthier/active-listener}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
