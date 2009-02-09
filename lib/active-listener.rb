@@ -51,17 +51,21 @@ class ActiveListener
       log("Firing event: #{evt.inspect}")
       log(evt.fire(:rake_root => rake_root))
     end
+    self.events.sort{|x,y| x.time_to_fire <=> y.time_to_fire}
   end
 
-  def sleep_to_next_event
-    self.events.sort{|x,y| x.time_to_fire <=> y.time_to_fire}
+  def time_to_next_event
     if self.events.first
       sleep_time = self.events.first.time_to_fire+0.01
     else
       sleep_time = 0.5
     end
-    log("Sleeping for #{sleep_time}")
-    sleep(sleep_time)
+    return sleep_time
+  end
+
+  def sleep_to_next_event
+    log("Sleeping for #{time_to_next_event}")
+    sleep(time_to_next_event)
   end
 
   class Event

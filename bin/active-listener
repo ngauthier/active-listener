@@ -28,6 +28,6 @@ if @al.events.empty?
 end
 
 while running
-  @al.fire_events
-  @al.sleep_to_next_event
+  @al.fire_events if @al.time_to_next_event < 0
+  sleep(0.2)
 end
