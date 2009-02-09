@@ -44,12 +44,13 @@ class ActiveListenerTest < Test::Unit::TestCase
 
       should "touch a file" do
         assert !File.exists?(@sample_file)
+        @al.sleep_to_next_event
         @al.fire_events
         assert File.exists?(@sample_file)
       end
 
-      should "need to be fired when added" do
-        assert @al.events[0].time_to_fire < 0
+      should "not need to be fired when added" do
+        assert @al.events[0].time_to_fire > 0
       end
 
       should "need to be fired 1 second after being fired" do
@@ -80,6 +81,7 @@ class ActiveListenerTest < Test::Unit::TestCase
       @al = ActiveListener.new(:config => @config_path)
       assert @al.events.size > 0
       assert !File.exists?(@sample_file)
+      @al.sleep_to_next_event
       @al.fire_events
       assert File.exists?(@sample_file)
     end
@@ -89,7 +91,7 @@ class ActiveListenerTest < Test::Unit::TestCase
   context "An autostarted listener" do
 
     setup do
-      ActiveListener.autostart(
+      assert ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
         :log_file => File.join(File.dirname(__FILE__), 'active_listener.log'),
@@ -102,11 +104,12 @@ class ActiveListenerTest < Test::Unit::TestCase
       ActiveListener.stop(
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
       )
+      sleep(1)
       FileUtils.rm_f(File.join(File.dirname(__FILE__),'sample.txt'))
     end
 
     should "load events from the config file" do
-      sleep(1)
+      sleep(2)
       assert File.exists?(@sample_file)
       FileUtils.rm_f(@sample_file)
       assert !File.exists?(@sample_file)
@@ -114,5 +117,52 @@ class ActiveListenerTest < Test::Unit::TestCase
       assert File.exists?(@sample_file)
     end
 
+    should "not duplicate processes" do
+      pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
+      pid = pf.read
+      pf.close
+      assert(pid_running(pid))
+      ActiveListener.autostart(
+        :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
+        :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
+        :log_file => File.join(File.dirname(__FILE__), 'active_listener.log'),
+        :rake_root => File.join(File.dirname(__FILE__), '..')
+      )
+      pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
+      new_pid = pf.read
+      pf.close
+      assert_equal pid, new_pid
+      assert(pid_running(pid))
+    end
+
+    should "be able to be stopped and a new one can be run" do
+      pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
+      pid = pf.read
+      pf.close
+      assert(pid_running(pid))
+      ActiveListener.stop(
+        :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
+      )
+      sleep(1)
+      assert(!pid_running(pid))
+      ActiveListener.autostart(
+        :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
+        :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
+        :log_file => File.join(File.dirname(__FILE__), 'active_listener.log'),
+        :rake_root => File.join(File.dirname(__FILE__), '..')
+      )
+      pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
+      new_pid = pf.read
+      pf.close
+      assert_not_equal pid, new_pid
+      assert(pid_running(new_pid))
+      assert(!pid_running(pid))
+    end
+  end
+
+  private
+
+  def pid_running(pid)
+    `ps -p #{pid.to_i.to_s} -o pid=`.size > 0
   end
 end

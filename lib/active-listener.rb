@@ -13,7 +13,6 @@ class ActiveListener
     rescue
       raise "Need :config :pid_file :log_file :rake_root"
     end
-    ActiveListener.stop(opts)
     command = [
       "start-stop-daemon --start",
       "--make-pidfile --pidfile #{pid_file}",
@@ -30,7 +29,7 @@ class ActiveListener
 
   def self.stop(opts = {})
     pid_file = opts[:pid_file]
-    `start-stop-daemon --stop --oknodo --quiet --pidfile #{File.expand_path(pid_file)}`
+    `start-stop-daemon --stop --oknodo --pidfile #{File.expand_path(pid_file)}`
   end
 
   def initialize(opts = {})
@@ -69,7 +68,7 @@ class ActiveListener
     def initialize(opts = {})
       self.task = opts[:task] || opts["task"]
       self.period = opts[:period] || opts["period"]
-      self.last_fire = 0
+      self.last_fire = Time.now.to_f
     end
 
     def time_to_fire
