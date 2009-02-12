@@ -5,18 +5,15 @@
 
 <html>
 <head>
-  <title>fire_events (ActiveListener)</title>
+  <title>add_event (ActiveListener)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 80</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire_events</span>
-    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>}.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">evt</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Firing event: #{evt.inspect}&quot;</span>)
-      <span class="ruby-identifier">log</span>(<span class="ruby-identifier">evt</span>.<span class="ruby-identifier">fire</span>(<span class="ruby-identifier">:rake_root</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">rake_root</span>))
-    <span class="ruby-keyword kw">end</span>
-    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">sort</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span>,<span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">time_to_fire</span>}
+  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 100</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_event</span>(<span class="ruby-identifier">evt</span>)
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">evt</span>)
+    <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Added Event #{evt.inspect}&quot;</span>)
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

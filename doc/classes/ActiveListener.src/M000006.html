@@ -5,19 +5,18 @@
 
 <html>
 <head>
-  <title>time_to_next_event (ActiveListener)</title>
+  <title>fire_events (ActiveListener)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 92</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">time_to_next_event</span>
-    <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>
-      <span class="ruby-identifier">sleep_time</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">time_to_fire</span><span class="ruby-operator">+</span><span class="ruby-value">0</span><span class="ruby-value">.01</span>
-    <span class="ruby-keyword kw">else</span>
-      <span class="ruby-identifier">sleep_time</span> = <span class="ruby-value">0</span><span class="ruby-value">.5</span>
+  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 110</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fire_events</span>
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>}.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">evt</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Firing event: #{evt.inspect}&quot;</span>)
+      <span class="ruby-identifier">log</span>(<span class="ruby-identifier">evt</span>.<span class="ruby-identifier">fire</span>(<span class="ruby-identifier">:rake_root</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">rake_root</span>))
     <span class="ruby-keyword kw">end</span>
-    <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">sleep_time</span>
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">sort</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span>,<span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">time_to_fire</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">time_to_fire</span>}
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

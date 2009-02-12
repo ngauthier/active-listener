@@ -10,10 +10,15 @@
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 47</span>
+  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 52</span>
   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">opts</span> = {})
     <span class="ruby-identifier">pid_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>]
-    <span class="ruby-node">`start-stop-daemon --stop --oknodo --pidfile #{File.expand_path(pid_file)}`</span>
+    <span class="ruby-value">10</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-node">`start-stop-daemon --stop --oknodo --pidfile #{File.expand_path(pid_file)}`</span>
+      <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">running</span>(<span class="ruby-identifier">opts</span>)
+      <span class="ruby-identifier">sleep</span>(<span class="ruby-value">0</span><span class="ruby-value">.2</span>)
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">return</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">running</span>(<span class="ruby-identifier">opts</span>)
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

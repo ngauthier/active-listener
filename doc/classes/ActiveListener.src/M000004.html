@@ -5,15 +5,19 @@
 
 <html>
 <head>
-  <title>add_event (ActiveListener)</title>
+  <title>new (ActiveListener)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 70</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_event</span>(<span class="ruby-identifier">evt</span>)
-    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">evt</span>)
-    <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;Added Event #{evt.inspect}&quot;</span>)
+  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 88</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">events</span> = []
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">log_file</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>]
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">rake_root</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>]
+    <span class="ruby-identifier">clear_log</span>
+    <span class="ruby-identifier">log</span>(<span class="ruby-value str">&quot;ActiveListener Initialized&quot;</span>)
+    <span class="ruby-identifier">load_config</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

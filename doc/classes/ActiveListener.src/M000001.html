@@ -32,6 +32,11 @@
       <span class="ruby-node">&quot;#{rake_root}&quot;</span>,
     ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; &quot;</span>)
     <span class="ruby-node">`#{command}`</span>
+    <span class="ruby-value">10</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">running</span>(<span class="ruby-identifier">opts</span>)
+      <span class="ruby-identifier">sleep</span>(<span class="ruby-value">0</span><span class="ruby-value">.1</span>)
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">running</span>(<span class="ruby-identifier">opts</span>)
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
