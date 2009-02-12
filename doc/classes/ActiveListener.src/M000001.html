@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>autostart (ActiveListener)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/active-listener.rb, line 21</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">autostart</span>(<span class="ruby-identifier">opts</span> = {})
+    <span class="ruby-keyword kw">begin</span>
+      <span class="ruby-identifier">config_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:config</span>])
+      <span class="ruby-identifier">pid_file</span>    = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:pid_file</span>])
+      <span class="ruby-identifier">log_file</span>    = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:log_file</span>])
+      <span class="ruby-identifier">rake_root</span>   = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:rake_root</span>])
+    <span class="ruby-keyword kw">rescue</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Need :config :pid_file :log_file :rake_root&quot;</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-identifier">command</span> = [
+      <span class="ruby-value str">&quot;start-stop-daemon --start&quot;</span>,
+      <span class="ruby-node">&quot;--make-pidfile --pidfile #{pid_file}&quot;</span>,
+      <span class="ruby-value str">&quot;--background&quot;</span>,
+      <span class="ruby-node">&quot;--startas #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'active-listener'))}&quot;</span>,
+      <span class="ruby-node">&quot;--chdir #{File.expand_path(File.dirname(__FILE__))}&quot;</span>,
+      <span class="ruby-value str">&quot;--&quot;</span>,
+      <span class="ruby-node">&quot;#{config_file}&quot;</span>,
+      <span class="ruby-node">&quot;#{log_file}&quot;</span>,
+      <span class="ruby-node">&quot;#{rake_root}&quot;</span>,
+    ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot; &quot;</span>)
+    <span class="ruby-node">`#{command}`</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
