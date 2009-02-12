@@ -39,6 +39,11 @@ class ActiveListener
       "#{rake_root}",
     ].join(" ")
     `#{command}`
+    10.times do
+      return true if self.running(opts)
+      sleep(0.1)
+    end
+    return self.running(opts)
   end
 
   # Stop an #ActiveListener by specifying a pid file
@@ -46,7 +51,32 @@ class ActiveListener
   #  ActiveListener.stop(:pid_file => File.join(RAILS_ROOT, 'log', 'active-listener.pid'))
   def self.stop(opts = {})
     pid_file = opts[:pid_file]
-    `start-stop-daemon --stop --oknodo --pidfile #{File.expand_path(pid_file)}`
+    10.times do
+      `start-stop-daemon --stop --oknodo --pidfile #{File.expand_path(pid_file)}`
+      break if !self.running(opts)
+      sleep(0.2)
+    end
+    return !self.running(opts)
+  end
+
+  # Check if an #ActiveListener is running
+  #
+  #  ActiveListener.running(:pid => 12345)
+  # or
+  #  ActiveListener.running(:pid_file => 'active-listener.pid')
+  def self.running(opts = {})
+    unless opts[:pid] or opts[:pid_file]
+      raise "Must pass in pid or pid_file"
+    end
+    if opts[:pid_file]
+      raise "File does not exist" unless File.exists?(opts[:pid_file])
+      f = File.new(opts[:pid_file], 'r')
+      pid = f.read.to_i
+      f.close
+    else
+      pid = opts[:pid].to_i
+    end
+    return `ps -p #{pid.to_s} -o pid=`.size > 0
   end
 
   # Create an #ActiveListener in the foreground. This is useful for a non-rails project.
@@ -192,6 +222,8 @@ class ActiveListener
     if port
       self.port = port
       spawn_listener_thread
+    else
+      # puts "no port in [#{config_file}]:\n#{yml.inspect}"
     end
   end
 
@@ -220,7 +252,7 @@ class ActiveListener
 
   # Listen on a port for triggers (not implemented)
   def spawn_listener_thread
-    # puts "Hey a port! #{port}"
+    puts "Hey a port! #{port}"
   end
 
 end

@@ -91,20 +91,20 @@ class ActiveListenerTest < Test::Unit::TestCase
   context "An autostarted listener" do
 
     setup do
+      @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
+      FileUtils.rm_f @sample_file
       assert ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
         :log_file => File.join(File.dirname(__FILE__), 'active_listener.log'),
         :rake_root => File.join(File.dirname(__FILE__), '..')
       )
-      @sample_file = File.join(File.dirname(__FILE__),'sample.txt')
     end
 
     teardown do
-      ActiveListener.stop(
+      assert ActiveListener.stop(
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
       )
-      sleep(1)
       FileUtils.rm_f(File.join(File.dirname(__FILE__),'sample.txt'))
     end
 
@@ -113,11 +113,7 @@ class ActiveListenerTest < Test::Unit::TestCase
       assert File.exists?(@sample_file)
       FileUtils.rm_f(@sample_file)
       assert !File.exists?(@sample_file)
-      sleep(1)
-      assert File.exists?(@sample_file)
-      FileUtils.rm_f(@sample_file)
-      assert !File.exists?(@sample_file)
-      sleep(1)
+      sleep(2)
       assert File.exists?(@sample_file)
     end
 
@@ -125,7 +121,7 @@ class ActiveListenerTest < Test::Unit::TestCase
       pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
       pid = pf.read
       pf.close
-      assert(pid_running(pid))
+      assert(ActiveListener.running(:pid => pid))
       ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
@@ -136,19 +132,19 @@ class ActiveListenerTest < Test::Unit::TestCase
       new_pid = pf.read
       pf.close
       assert_equal pid, new_pid
-      assert(pid_running(pid))
+      assert(ActiveListener.running(:pid => pid))
     end
 
     should "be able to be stopped and a new one can be run" do
       pf = File.new(File.join(File.dirname(__FILE__), 'active_listener.pid'))
       pid = pf.read
       pf.close
-      assert(pid_running(pid))
-      ActiveListener.stop(
+      assert ActiveListener.running(:pid => pid)
+      assert ActiveListener.stop(
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
       )
-      sleep(1)
-      assert(!pid_running(pid))
+      sleep(0.2)
+      assert(!ActiveListener.running(:pid => pid))
       ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
@@ -159,8 +155,8 @@ class ActiveListenerTest < Test::Unit::TestCase
       new_pid = pf.read
       pf.close
       assert_not_equal pid, new_pid
-      assert(pid_running(new_pid))
-      assert(!pid_running(pid))
+      assert ActiveListener.running(:pid => new_pid)
+      assert !ActiveListener.running(:pid => pid)
     end
   end
 
@@ -190,10 +186,9 @@ class ActiveListenerTest < Test::Unit::TestCase
 
   context "An auto-started event based listener" do
     setup do
-      ActiveListener.stop(
+      assert ActiveListener.stop(
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
       )
-      sleep(0.5)
       ActiveListener.autostart(
         :config => File.join(File.dirname(__FILE__), 'active_listener-events.yml'),
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid'),
@@ -204,10 +199,9 @@ class ActiveListenerTest < Test::Unit::TestCase
     end
 
     teardown do
-      ActiveListener.stop(
+      assert ActiveListener.stop(
         :pid_file => File.join(File.dirname(__FILE__), 'active_listener.pid')
       )
-      sleep(1)
       FileUtils.rm_f(File.join(File.dirname(__FILE__),'sample.txt'))
     end
 
