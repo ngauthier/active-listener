@@ -115,6 +115,10 @@ class ActiveListenerTest < Test::Unit::TestCase
       assert !File.exists?(@sample_file)
       sleep(1)
       assert File.exists?(@sample_file)
+      FileUtils.rm_f(@sample_file)
+      assert !File.exists?(@sample_file)
+      sleep(1)
+      assert File.exists?(@sample_file)
     end
 
     should "not duplicate processes" do
@@ -212,11 +216,5 @@ class ActiveListenerTest < Test::Unit::TestCase
       #ActiveListener.trigger(20150,"MY_TRIGGER")
       #assert File.exists?(@sample_file)
     end
-  end
-
-  private
-
-  def pid_running(pid)
-    `ps -p #{pid.to_i.to_s} -o pid=`.size > 0
   end
 end
